@@ -11,6 +11,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
         }
         .card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -22,6 +23,14 @@
         .instagram-card {
              background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
         }
+        /* Animación para que los resultados aparezcan suavemente */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -30,42 +39,31 @@
         
         <!-- Header con el logo -->
         <header class="text-center mb-10">
-            <!-- ESTA ES LA LÍNEA CORREGIDA -->
+            <!-- 
+              AQUÍ ESTÁ LA SOLUCIÓN:
+              La clave es usar el nombre exacto del archivo que subiste.
+              Asegúrate de que tu archivo en GitHub se llame "1000132795.jpg".
+            -->
             <img src="1000132795.jpg" alt="Logo de Planta'dos" class="mx-auto h-48 w-auto rounded-xl shadow-lg">
             <p class="text-green-600 mt-4 text-lg font-semibold">Tu centro educativo para el cuidado de plantas</p>
         </header>
 
         <!-- Filters Section -->
         <div class="bg-white p-6 rounded-xl shadow-lg mb-8 card">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+            <h2 class="text-xl font-bold text-center text-gray-800 mb-4">Encuentra tu Planta</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                 <!-- Species Filter -->
-                <div>
+                <div class="md:col-span-2">
                     <label for="species-select" class="font-semibold text-gray-700 mb-2 block">Especie de Planta</label>
                     <select id="species-select" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition">
-                        <option value="">Selecciona una especie</option>
-                    </select>
-                </div>
-                
-                <!-- Season Filter -->
-                <div>
-                    <label for="season-select" class="font-semibold text-gray-700 mb-2 block">Temporada</label>
-                    <select id="season-select" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition">
-                        <option value="">Selecciona una temporada</option>
-                    </select>
-                </div>
-
-                <!-- Country Filter -->
-                <div>
-                    <label for="country-select" class="font-semibold text-gray-700 mb-2 block">País</label>
-                    <select id="country-select" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition">
-                         <option value="">Selecciona un país</option>
+                        <option value="">Selecciona una especie de la lista</option>
                     </select>
                 </div>
                 
                 <!-- Search Button -->
                 <button id="search-btn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
-                    Buscar
+                    Ver Guía
                 </button>
             </div>
         </div>
@@ -77,7 +75,7 @@
                 <div id="placeholder" class="text-center bg-white p-12 rounded-xl shadow-lg">
                     <svg class="mx-auto h-16 w-16 text-green-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
                     <h3 class="mt-4 text-lg font-semibold text-gray-800">Fichas de Cuidado</h3>
-                    <p class="mt-1 text-gray-500">Los consejos y herramientas para tus plantas aparecerán aquí.</p>
+                    <p class="mt-1 text-gray-500">Selecciona una planta para ver su guía de cuidado y las herramientas recomendadas.</p>
                 </div>
                 <div id="results-content">
                     <!-- Results will be injected here -->
@@ -103,46 +101,155 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Base de Datos Educativa (¡CON MÁS PLANTAS!) ---
             const plantCareData = {
-                "Monstera Deliciosa (Costilla de Adán)": { "Primavera/Verano": { "República Dominicana": { tools: [ { name: "Tijeras de podar afiladas", description: "Para cortar hojas amarillentas y fomentar un crecimiento saludable." }, { name: "Regadera de cuello largo", description: "Permite un riego preciso en la base, evitando mojar las hojas." }, { name: "Tutor o guía de musgo", description: "Ayuda a la planta a trepar, desarrollando hojas más grandes." } ], careInfo: { watering: "Riega abundantemente cuando los primeros 5-7 cm de sustrato estén secos. Reduce el riego en invierno.", light: "Luz brillante e indirecta. El sol directo puede quemar sus hojas.", funFact: "Las fenestraciones (agujeros) en sus hojas le ayudan a capturar mejor los rayos de sol en la selva." } } } },
-                "Zamioculcas zamiifolia (Planta ZZ)": { "Todo el año": { "República Dominicana": { tools: [ { name: "Paño de microfibra húmedo", description: "Esencial para limpiar el polvo de sus hojas brillantes." }, { name: "Medidor de humedad", description: "La herramienta más importante para evitar el exceso de riego." }, { name: "Maceta de terracota", description: "Su material poroso ayuda a que el sustrato se seque más rápido." } ], careInfo: { watering: "Es una planta de sequía. Riega solo cuando el sustrato esté completamente seco. Mejor regar de menos que de más.", light: "Tolera muy bien la baja luz, pero prefiere luz indirecta brillante para un mejor crecimiento.", funFact: "Almacena agua en sus rizomas subterráneos, lo que la hace extremadamente resistente a la sequía." } } } },
-                "Sansevieria (Lengua de suegra)": { "Todo el año": { "República Dominicana": { tools: [ { name: "Plumero o brocha suave", description: "Perfecto para quitar el polvo de sus hojas largas y verticales." }, { name: "Pala de mano pequeña", description: "Útil para airear la capa superior del sustrato de vez en cuando." }, { name: "Tijeras fuertes", description: "Para dividir la planta cuando crece demasiado y quieres propagarla." } ], careInfo: { watering: "Muy poca agua. Deja que el sustrato se seque por completo entre riegos.", light: "Se adapta a casi cualquier nivel de luz, desde baja hasta brillante indirecta.", funFact: "Es una de las mejores plantas para purificar el aire, según un estudio de la NASA." } } } }
+                "Monstera Deliciosa (Costilla de Adán)": {
+                    tools: [
+                        { name: "Tijeras de podar afiladas", description: "Para cortar hojas amarillentas y fomentar un crecimiento saludable." },
+                        { name: "Regadera de cuello largo", description: "Permite un riego preciso en la base, evitando mojar las hojas." },
+                        { name: "Tutor o guía de musgo", description: "Ayuda a la planta a trepar, desarrollando hojas más grandes." }
+                    ],
+                    careInfo: {
+                        watering: "Riega abundantemente cuando los primeros 5-7 cm de sustrato estén secos. Reduce el riego en invierno.",
+                        light: "Luz brillante e indirecta. El sol directo puede quemar sus hojas.",
+                        funFact: "Las fenestraciones (agujeros) en sus hojas le ayudan a capturar mejor los rayos de sol en la selva."
+                    }
+                },
+                "Zamioculcas zamiifolia (Planta ZZ)": {
+                    tools: [
+                        { name: "Paño de microfibra húmedo", description: "Esencial para limpiar el polvo de sus hojas brillantes." },
+                        { name: "Medidor de humedad", description: "La herramienta más importante para evitar el exceso de riego." },
+                        { name: "Maceta de terracota", description: "Su material poroso ayuda a que el sustrato se seque más rápido." }
+                    ],
+                    careInfo: {
+                        watering: "Es una planta de sequía. Riega solo cuando el sustrato esté completamente seco. Mejor regar de menos que de más.",
+                        light: "Tolera muy bien la baja luz, pero prefiere luz indirecta brillante para un mejor crecimiento.",
+                        funFact: "Almacena agua en sus rizomas subterráneos, lo que la hace extremadamente resistente a la sequía."
+                    }
+                },
+                "Sansevieria (Lengua de suegra)": {
+                    tools: [
+                        { name: "Plumero o brocha suave", description: "Perfecto para quitar el polvo de sus hojas largas y verticales." },
+                        { name: "Pala de mano pequeña", description: "Útil para airear la capa superior del sustrato de vez en cuando." },
+                        { name: "Tijeras fuertes", description: "Para dividir la planta cuando crece demasiado y quieres propagarla." }
+                    ],
+                    careInfo: {
+                        watering: "Muy poca agua. Deja que el sustrato se seque por completo entre riegos.",
+                        light: "Se adapta a casi cualquier nivel de luz, desde baja hasta brillante indirecta.",
+                        funFact: "Es una de las mejores plantas para purificar el aire, según un estudio de la NASA."
+                    }
+                },
+                "Ficus lyrata (Pandurata)": {
+                     tools: [
+                        { name: "Pulverizador de agua", description: "Le encanta la humedad ambiental alta. Pulveriza sus hojas cada 2-3 días." },
+                        { name: "Palo de bambú o tutor", description: "Para guiar su crecimiento vertical y evitar que el tronco se doble." },
+                        { name: "Lupa de jardinero", description: "Útil para revisar el envés de las hojas en busca de plagas como la araña roja." }
+                    ],
+                    careInfo: {
+                        watering: "Riega cuando la capa superior del sustrato (2-3 cm) esté seca. No le gusta el encharcamiento.",
+                        light: "Necesita mucha luz brillante e indirecta, cerca de una ventana es ideal. Gírala cada semana.",
+                        funFact: "En su hábitat natural en África occidental, puede llegar a crecer hasta 15 metros de altura."
+                    }
+                },
+                "Dypsis lutescens (Palma Areca)": {
+                     tools: [
+                        { name: "Humidificador", description: "Es una planta tropical que sufre con el aire seco. Un humidificador es su mejor amigo." },
+                        { name: "Tijeras de punta fina", description: "Para recortar las puntas marrones de las hojas sin dañar el resto de la hoja." },
+                        { name: "Plato con guijarros y agua", description: "Una forma casera de aumentar la humedad alrededor de la planta." }
+                    ],
+                    careInfo: {
+                        watering: "Mantén el sustrato ligeramente húmedo, pero no empapado. Usa agua filtrada o de lluvia si es posible.",
+                        light: "Luz indirecta y brillante. El sol directo puede amarillear y quemar sus hojas.",
+                        funFact: "Es excelente para purificar el aire, eliminando toxinas como el formaldehído y el xileno."
+                    }
+                }
             };
+
+            // --- Elementos del DOM ---
             const speciesSelect = document.getElementById('species-select');
-            const seasonSelect = document.getElementById('season-select');
-            const countrySelect = document.getElementById('country-select');
             const searchBtn = document.getElementById('search-btn');
             const resultsContent = document.getElementById('results-content');
             const placeholder = document.getElementById('placeholder');
+
+            // --- Funciones ---
             function populateFilters() {
                 const species = Object.keys(plantCareData);
-                const seasons = new Set();
-                const countries = new Set();
-                species.forEach(s => { const speciesOption = document.createElement('option'); speciesOption.value = s; speciesOption.textContent = s; speciesSelect.appendChild(speciesOption); Object.keys(plantCareData[s]).forEach(season => { seasons.add(season); Object.keys(plantCareData[s][season]).forEach(country => { countries.add(country); }); }); });
-                seasons.forEach(season => { const seasonOption = document.createElement('option'); seasonOption.value = season; seasonOption.textContent = season; seasonSelect.appendChild(seasonOption); });
-                countries.forEach(country => { const countryOption = document.createElement('option'); countryOption.value = country; countryOption.textContent = country; countrySelect.appendChild(countryOption); });
-                countrySelect.value = "República Dominicana";
+                species.forEach(s => {
+                    const speciesOption = document.createElement('option');
+                    speciesOption.value = s;
+                    speciesOption.textContent = s;
+                    speciesSelect.appendChild(speciesOption);
+                });
             }
+            
             function displayResults(data) {
                 resultsContent.innerHTML = '';
-                if (!data) { placeholder.innerHTML = `<div class="text-center bg-white p-12 rounded-xl shadow-lg"><svg class="mx-auto h-16 w-16 text-red-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg><h3 class="mt-4 text-lg font-semibold text-gray-800">Sin resultados</h3><p class="mt-1 text-gray-500">No encontramos una guía para esta combinación. ¡Intenta con otra!</p></div>`; placeholder.classList.remove('hidden'); return; }
+                
+                if (!data) {
+                    placeholder.innerHTML = `<div class="text-center bg-white p-12 rounded-xl shadow-lg animate-fade-in"><svg class="mx-auto h-16 w-16 text-red-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg><h3 class="mt-4 text-lg font-semibold text-gray-800">Error</h3><p class="mt-1 text-gray-500">Por favor, selecciona una planta de la lista.</p></div>`;
+                    placeholder.classList.remove('hidden');
+                    return;
+                }
+
                 placeholder.classList.add('hidden');
+
                 const { tools, careInfo } = data;
                 const resultCard = document.createElement('div');
                 resultCard.className = 'card bg-white rounded-xl shadow-lg p-6 animate-fade-in';
-                resultCard.innerHTML = `<h2 class="text-2xl font-bold text-green-800 mb-4">Guía de Cuidado</h2><div class="mb-6 border-b pb-4"><div class="mb-3"><h4 class="font-semibold text-gray-700">💧 Riego</h4><p class="text-gray-600">${careInfo.watering}</p></div><div><h4 class="font-semibold text-gray-700">☀️ Luz</h4><p class="text-gray-600">${careInfo.light}</p></div></div><div class="mb-6 border-b pb-4"><h3 class="text-xl font-bold text-green-800 mb-3">Herramientas Recomendadas</h3><ul class="space-y-3">${tools.map(tool => `<li class="flex items-start"><svg class="h-6 w-6 text-green-500 mr-3 flex-shrink-0 mt-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><div><p class="font-semibold">${tool.name}</p><p class="text-gray-600 text-sm">${tool.description}</p></div></li>`).join('')}</ul></div><div><h3 class="text-xl font-bold text-green-800 mb-3">¿Sabías que...?</h3><p class="text-gray-600 italic">"${careInfo.funFact}"</p></div>`;
+                
+                resultCard.innerHTML = `
+                    <h2 class="text-2xl font-bold text-green-800 mb-4">Guía de Cuidado</h2>
+                    
+                    <div class="mb-6 border-b pb-4 space-y-3">
+                        <div>
+                            <h4 class="font-semibold text-gray-700 flex items-center"><span class="text-2xl mr-2">💧</span> Riego</h4>
+                            <p class="text-gray-600 pl-8">${careInfo.watering}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-700 flex items-center"><span class="text-2xl mr-2">☀️</span> Luz</h4>
+                            <p class="text-gray-600 pl-8">${careInfo.light}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 border-b pb-4">
+                        <h3 class="text-xl font-bold text-green-800 mb-3">Herramientas Recomendadas</h3>
+                        <ul class="space-y-3">
+                            ${tools.map(tool => `
+                                <li class="flex items-start">
+                                    <svg class="h-6 w-6 text-green-500 mr-3 flex-shrink-0 mt-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                    <div>
+                                        <p class="font-semibold">${tool.name}</p>
+                                        <p class="text-gray-600 text-sm">${tool.description}</p>
+                                    </div>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold text-green-800 mb-3">¿Sabías que...?</h3>
+                        <p class="text-gray-600 italic">"${careInfo.funFact}"</p>
+                    </div>
+                `;
+                
                 resultsContent.appendChild(resultCard);
             }
+
+            // --- Event Listeners ---
             searchBtn.addEventListener('click', () => {
                 const selectedSpecies = speciesSelect.value;
-                const selectedSeason = seasonSelect.value;
-                const selectedCountry = countrySelect.value;
-                if (!selectedSpecies || !selectedSeason || !selectedCountry) { alert('Por favor, completa todos los campos para la búsqueda.'); return; }
-                const resultData = plantCareData[selectedSpecies]?.[selectedSeason]?.[selectedCountry];
+                if (!selectedSpecies) {
+                    displayResults(null); // Muestra mensaje de error si no se selecciona nada
+                    return;
+                }
+                const resultData = plantCareData[selectedSpecies];
                 displayResults(resultData);
             });
+
+            // --- Inicialización ---
             populateFilters();
         });
     </script>
 </body>
 </html>
+
